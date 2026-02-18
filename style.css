@@ -1,0 +1,251 @@
+:root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --background: #0f172a;
+    --surface: #1e293b;
+    --text: #f8fafc;
+    --glow: rgba(99, 102, 241, 0.5);
+    --dice-color: #ffffff;
+    --dot-color: #1e293b;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    perspective: 1000px;
+}
+
+.container {
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+    padding: 2rem;
+}
+
+header h1 {
+    font-size: 3rem;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 20px rgba(165, 180, 252, 0.3);
+}
+
+header p {
+    color: #94a3b8;
+    margin-bottom: 3rem;
+}
+
+.scene {
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.dice-container {
+    display: flex;
+    gap: 4rem;
+}
+
+.dice {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    transform-style: preserve-3d;
+    transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: var(--dice-color);
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    display: grid;
+    place-items: center;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+}
+
+/* Dots positioning */
+.face::before, .face::after, .face span {
+    content: '';
+    display: block;
+    width: 18px;
+    height: 18px;
+    background-color: var(--dot-color);
+    border-radius: 50%;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+}
+
+/* Face specific styles */
+/* 1 */
+.front { transform: translateZ(50px); display: flex; justify-content: center; align-items: center; }
+
+/* 6 */
+.back { transform: rotateY(180deg) translateZ(50px); display: grid; grid-template-columns: repeat(2, 1fr); padding: 18px; gap: 4px; }
+.back::before, .back::after { display: none; }
+.back .dot { display: block; }
+
+/* 2 */
+.right { transform: rotateY(90deg) translateZ(50px); display: flex; justify-content: space-between; padding: 18px; }
+.right::before { align-self: flex-start; }
+.right::after { align-self: flex-end; }
+
+/* 5 */
+.left { transform: rotateY(-90deg) translateZ(50px); display: grid; grid-template-columns: repeat(2, 1fr); padding: 18px; gap: 4px; }
+.left::before, .left::after { display: none; } /* Custom logic for 5 in JS/HTML structure or just specific CSS */
+
+/* 3 */
+.top { transform: rotateX(90deg) translateZ(50px); display: flex; justify-content: center; align-items: center; }
+.top::before { position: absolute; top: 18px; left: 18px; }
+.top::after { position: absolute; bottom: 18px; right: 18px; }
+
+/* 4 */
+.bottom { transform: rotateX(-90deg) translateZ(50px); display: grid; grid-template-columns: repeat(2, 1fr); padding: 18px; gap: 4px; }
+.bottom::before, .bottom::after { display: none; }
+
+/* Fixing face dot layouts with simplified approach */
+/* We will use specific classes added in JS or inner HTML for dots to be perfect, 
+   but for now let's use a simpler background-image radial gradient trick for better performance/cleaner CSS 
+   OR just structure the HTML inside faces better in the JS generation. 
+   
+   Actually, let's use the radial-gradient method for the dots to keep HTML clean.
+*/
+
+.face {
+    background-color: white;
+    background-image: radial-gradient(circle at center, var(--dot-color) 8px, transparent 9px);
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.face::before, .face::after { display: none; } /* Reset previous attempt */
+
+/* 1 */
+.front { background-image: radial-gradient(circle at center, var(--dot-color) 10px, transparent 11px); }
+
+/* 2 */
+.right { 
+    background-image: 
+        radial-gradient(circle at 25% 25%, var(--dot-color) 8px, transparent 9px),
+        radial-gradient(circle at 75% 75%, var(--dot-color) 8px, transparent 9px);
+}
+
+/* 3 */
+.top { 
+    background-image: 
+        radial-gradient(circle at 25% 25%, var(--dot-color) 8px, transparent 9px),
+        radial-gradient(circle at 50% 50%, var(--dot-color) 8px, transparent 9px),
+        radial-gradient(circle at 75% 75%, var(--dot-color) 8px, transparent 9px);
+}
+
+/* 4 */
+.bottom { 
+    background-image: 
+        radial-gradient(circle at 25% 25%, var(--dot-color) 8px, transparent 9px),
+        radial-gradient(circle at 75% 25%, var(--dot-color) 8px, transparent 9px),
+        radial-gradient(circle at 25% 75%, var(--dot-color) 8px, transparent 9px),
+        radial-gradient(circle at 75% 75%, var(--dot-color) 8px, transparent 9px);
+}
+
+/* 5 */
+.left { 
+    background-image: 
+        radial-gradient(circle at 25% 25%, var(--dot-color) 8px, transparent 9px),
+        radial-gradient(circle at 75% 25%, var(--dot-color) 8px, transparent 9px),
+        radial-gradient(circle at 50% 50%, var(--dot-color) 8px, transparent 9px),
+        radial-gradient(circle at 25% 75%, var(--dot-color) 8px, transparent 9px),
+        radial-gradient(circle at 75% 75%, var(--dot-color) 8px, transparent 9px);
+}
+
+/* 6 */
+.back { 
+    background-image: 
+        radial-gradient(circle at 25% 25%, var(--dot-color) 8px, transparent 9px),
+        radial-gradient(circle at 75% 25%, var(--dot-color) 8px, transparent 9px),
+        radial-gradient(circle at 25% 50%, var(--dot-color) 8px, transparent 9px),
+        radial-gradient(circle at 75% 50%, var(--dot-color) 8px, transparent 9px),
+        radial-gradient(circle at 25% 75%, var(--dot-color) 8px, transparent 9px),
+        radial-gradient(circle at 75% 75%, var(--dot-color) 8px, transparent 9px);
+}
+
+
+.premium-btn {
+    position: relative;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    border: none;
+    padding: 1rem 3rem;
+    border-radius: 50px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 10px 30px -10px var(--glow);
+}
+
+.premium-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px -10px var(--glow);
+}
+
+.premium-btn:active {
+    transform: translateY(1px);
+}
+
+.btn-text {
+    color: white;
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-size: 1.1rem;
+    z-index: 2;
+    position: relative;
+}
+
+.btn-glow {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% { left: -100%; }
+    20% { left: 100%; }
+    100% { left: 100%; }
+}
+
+.result-display {
+    margin-top: 2rem;
+    font-size: 1.5rem;
+    color: #94a3b8;
+    background: rgba(255,255,255,0.05);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    display: inline-block;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.score {
+    color: var(--primary);
+    font-weight: 700;
+    margin-left: 0.5rem;
+    font-size: 2rem;
+}

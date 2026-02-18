@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Master | Simulador de Dados Premium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Simulador de dados 3D premium com física realista e design moderno.">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dice Master</h1>
+            <p>Role os dados para tentar a sorte</p>
+        </header>
+
+        <div class="scene">
+            <div class="dice-container">
+                <div class="dice" id="dice1">
+                    <div class="face front"></div>
+                    <div class="face back"></div>
+                    <div class="face right"></div>
+                    <div class="face left"></div>
+                    <div class="face top"></div>
+                    <div class="face bottom"></div>
+                </div>
+                <div class="dice" id="dice2">
+                    <div class="face front"></div>
+                    <div class="face back"></div>
+                    <div class="face right"></div>
+                    <div class="face left"></div>
+                    <div class="face top"></div>
+                    <div class="face bottom"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="rollBtn" class="premium-btn">
+                <span class="btn-text">ROLAR DADOS</span>
+                <div class="btn-glow"></div>
+            </button>
+            <div class="result-display">
+                <span class="label">Total:</span>
+                <span id="totalScore" class="score">0</span>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
