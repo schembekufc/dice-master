@@ -123,17 +123,48 @@ header p {
 }
 
 /* Dice Game Specifics */
+.settings-controls {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.settings-controls label {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+}
+
+.settings-controls input {
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    width: 60px;
+    text-align: center;
+    font-family: inherit;
+}
+
 .scene {
-    height: 250px;
+    min-height: 250px;
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 3rem;
+    padding: 2rem 0;
+    /* Add vertical padding for multiple rows */
 }
 
 .dice-container {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 3rem;
+    max-width: 800px;
+    /* Limit width to force wrap nicely */
 }
 
 .dice {
