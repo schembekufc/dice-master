@@ -155,7 +155,8 @@ header p {
     align-items: center;
     margin-bottom: 3rem;
     padding: 2rem 0;
-    /* Add vertical padding for multiple rows */
+    perspective: 1000px;
+    /* Bring perspective closer to object */
 }
 
 .dice-container {
@@ -164,7 +165,9 @@ header p {
     justify-content: center;
     gap: 3rem;
     max-width: 800px;
-    /* Limit width to force wrap nicely */
+    perspective: 1000px;
+    /* Duplicate here just in case of flex issues */
+    transform-style: preserve-3d;
 }
 
 .dice {

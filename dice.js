@@ -17,6 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     function createDice() {
+        // Create dice wrapper
+        const diceInfo = document.createElement('div');
+        diceInfo.className = 'dice-wrapper'; // Just a placeholder for strict structure if needed
+
         const dice = document.createElement('div');
         dice.className = 'dice';
 
@@ -24,9 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Front (1), Back (6), Right (2), Left (5), Top (3), Bottom (4)
         const faces = ['front', 'back', 'right', 'left', 'top', 'bottom'];
 
-        faces.forEach(face => {
+        faces.forEach(function (face) {
             const faceDiv = document.createElement('div');
-            faceDiv.className = `face ${face}`;
+            faceDiv.className = 'face ' + face;
             dice.appendChild(faceDiv);
         });
 
