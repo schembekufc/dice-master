@@ -17,19 +17,15 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     function createDice() {
-        // Create dice wrapper
-        const diceInfo = document.createElement('div');
-        diceInfo.className = 'dice-wrapper';
-
         const dice = document.createElement('div');
         dice.className = 'dice';
 
-        ['front', 'back', 'right', 'left', 'top', 'bottom'].forEach((face, index) => {
-            const faceDiv = document.createElement('div');
+        // Face classes order must match our rotation logic expectations
+        // Front (1), Back (6), Right (2), Left (5), Top (3), Bottom (4)
+        const faces = ['front', 'back', 'right', 'left', 'top', 'bottom'];
 
-            // Map face names to classes correctly
-            // Order doesn't strictly matter for visuals as long as CSS matches
-            // logic above relies on these class names
+        faces.forEach(face => {
+            const faceDiv = document.createElement('div');
             faceDiv.className = `face ${face}`;
             dice.appendChild(faceDiv);
         });
@@ -37,27 +33,34 @@ document.addEventListener('DOMContentLoaded', () => {
         return dice;
     }
 
-    function updateDiceDisplay() {
+    function updateDiceCount() {
         let count = parseInt(diceCountInput.value);
         if (isNaN(count) || count < 1) count = 1;
-        if (count > 10) count = 10;
+        if (count > 10) {
+            count = 10;
+            diceCountInput.value = 10;
+        }
 
-        // Only update if number changed to avoid resetting positions unnecessarily
-        // But for simplicity/robustness, we rebuild on change
+        // Clear existing
         diceContainer.innerHTML = '';
         totalScoreElement.textContent = '0';
 
         for (let i = 0; i < count; i++) {
             const dice = createDice();
             diceContainer.appendChild(dice);
+            // Set initial state
+            dice.style.transform = `rotateX(0deg) rotateY(0deg)`;
         }
     }
 
     // Initialize
-    updateDiceDisplay();
+    updateDiceCount();
 
-    diceCountInput.addEventListener('change', updateDiceDisplay);
-    diceCountInput.addEventListener('input', updateDiceDisplay); // for slider feel if type=range
+    // Listen for changes
+    diceCountInput.addEventListener('change', updateDiceCount);
+    diceCountInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') updateDiceCount();
+    });
 
     function getRandomFace() {
         return Math.floor(Math.random() * 6) + 1;
@@ -65,54 +68,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function rollDice() {
         if (isRolling) return;
-        isRolling = true;
 
+        const diceElements = document.querySelectorAll('.dice');
+        if (diceElements.length === 0) return;
+
+        isRolling = true;
         rollBtn.disabled = true;
         rollBtn.style.opacity = '0.7';
         rollBtn.style.cursor = 'default';
 
-        const diceElements = document.querySelectorAll('.dice');
         let finalTotal = 0;
-        let completedDice = 0;
+        let completedAnimations = 0;
 
         diceElements.forEach((dice, index) => {
-            // Determine result first
+            // Determine result
             const result = getRandomFace();
             finalTotal += result;
 
-            // Randomize rotations
-            const xRot = faceRotations[result].x;
-            const yRot = faceRotations[result].y;
+            // Target rotation for this face
+            // To show Face X, we need to rotate to its inverse
+            // Logic:
+            // 1 (Front) -> 0,0
+            // 6 (Back) -> 180, 0 (or 0, 180)
+            // 2 (Right) -> 0, -90
+            // 5 (Left) -> 0, 90
+            // 3 (Top) -> -90, 0
+            // 4 (Bottom) -> 90, 0
 
-            // Add extra spins (min 3, max 6 full rotations)
-            const extraSpins = 3 + Math.floor(Math.random() * 3);
+            // Standard map
+            const target = { x: 0, y: 0 };
+            switch (result) {
+                case 1: target.x = 0; target.y = 0; break;
+                case 6: target.x = 180; target.y = 0; break;
+                case 2: target.x = 0; target.y = -90; break;
+                case 5: target.x = 0; target.y = 90; break;
+                case 3: target.x = -90; target.y = 0; break;
+                case 4: target.x = 90; target.y = 0; break;
+            }
 
-            // Randomize spin direction
-            const xDir = Math.random() > 0.5 ? 1 : -1;
-            const yDir = Math.random() > 0.5 ? 1 : -1;
+            // Add extra spins for animation
+            // Multiples of 360 ensure we land on the same orientation relative to target
+            const extraX = (3 + Math.floor(Math.random() * 3)) * 360;
+            const extraY = (3 + Math.floor(Math.random() * 3)) * 360;
 
-            const totalX = xRot + (extraSpins * 360 * xDir);
-            const totalY = yRot + (extraSpins * 360 * yDir);
+            // Apply unique rotation to each dice
+            const finalX = target.x + extraX;
+            const finalY = target.y + extraY;
 
-            // Add slight random offset to prevent perfect alignment during spin
-            const randomOffset = Math.random() * 30 - 15;
-
-            // Apply transform
-            // We use a timeout to stagger the start slightly
+            // Stagger animations
             setTimeout(() => {
-                dice.style.transition = 'transform 1.5s cubic-bezier(0.1, 0.9, 0.2, 1.0)';
-                dice.style.transform = `rotateX(${totalX}deg) rotateY(${totalY}deg)`;
-            }, index * 50);
+                dice.style.transition = 'transform 1.5s cubic-bezier(0.15, 0.9, 0.3, 1.2)';
+                dice.style.transform = `rotateX(${finalX}deg) rotateY(${finalY}deg)`;
+            }, index * 100);
         });
 
-        // Wait for all animations
+        // Finish up after all animations are done
+        const totalDuration = 1500 + (diceElements.length * 100);
+
         setTimeout(() => {
             isRolling = false;
             rollBtn.disabled = false;
             rollBtn.style.opacity = '1';
             rollBtn.style.cursor = 'pointer';
 
-            // Show score
+            // Display score with pop effect
             totalScoreElement.textContent = finalTotal;
             totalScoreElement.style.transform = 'scale(1.5)';
             totalScoreElement.style.color = '#fff';
@@ -124,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalScoreElement.style.textShadow = '';
             }, 300);
 
-        }, 1500 + (diceElements.length * 50));
+        }, totalDuration);
     }
 
     rollBtn.addEventListener('click', rollDice);
