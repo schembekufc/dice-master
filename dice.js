@@ -24,6 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const dice = document.createElement('div');
         dice.className = 'dice';
 
+        // Random premium colors
+        const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f43f5e'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        dice.style.setProperty('--dice-color', randomColor);
+        dice.style.setProperty('--dot-color', '#ffffff'); // White dots look better on colored dice
+        dice.style.setProperty('--face-border', 'rgba(0,0,0,0.1)'); // Softer border
+
         // Face classes order must match our rotation logic expectations
         // Front (1), Back (6), Right (2), Left (5), Top (3), Bottom (4)
         const faces = ['front', 'back', 'right', 'left', 'top', 'bottom'];
