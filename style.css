@@ -1,12 +1,16 @@
 :root {
     --primary: #6366f1;
     --primary-dark: #4f46e5;
+    --secondary: #8b5cf6;
     --background: #0f172a;
     --surface: #1e293b;
+    --surface-hover: #334155;
     --text: #f8fafc;
+    --text-muted: #94a3b8;
     --glow: rgba(99, 102, 241, 0.5);
     --dice-color: #ffffff;
     --dot-color: #1e293b;
+    --success: #10b981;
 }
 
 * {
@@ -23,7 +27,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    overflow-x: hidden;
     perspective: 1000px;
 }
 
@@ -32,6 +36,8 @@ body {
     width: 100%;
     max-width: 600px;
     padding: 2rem;
+    position: relative;
+    z-index: 10;
 }
 
 header h1 {
@@ -44,29 +50,112 @@ header h1 {
 }
 
 header p {
-    color: #94a3b8;
+    color: var(--text-muted);
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+}
+
+/* Home Page Menu */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
     margin-bottom: 3rem;
 }
 
+.menu-card {
+    background: var(--surface);
+    padding: 2rem;
+    border-radius: 20px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-card:hover {
+    transform: translateY(-5px);
+    background: var(--surface-hover);
+    border-color: var(--primary);
+    box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.3);
+}
+
+.card-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.menu-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--search);
+}
+
+.menu-card p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+}
+
+.card-arrow {
+    margin-top: auto;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.3s;
+}
+
+.menu-card:hover .card-arrow {
+    background: var(--primary);
+    color: white;
+}
+
+/* Dice Game Specifics */
 .scene {
-    height: 300px;
+    height: 250px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
 }
 
 .dice-container {
     display: flex;
-    gap: 4rem;
+    gap: 3rem;
 }
 
 .dice {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     transform-style: preserve-3d;
     transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@media (min-width: 600px) {
+    .dice {
+        width: 100px;
+        height: 100px;
+    }
+
+    .scene {
+        height: 300px;
+    }
+
+    .dice-container {
+        gap: 4rem;
+    }
 }
 
 .face {
@@ -76,57 +165,61 @@ header p {
     background: var(--dice-color);
     border-radius: 12px;
     border: 2px solid #e2e8f0;
-    display: grid;
-    place-items: center;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Dots positioning */
-.face::before, .face::after, .face span {
-    content: '';
-    display: block;
-    width: 18px;
-    height: 18px;
-    background-color: var(--dot-color);
-    border-radius: 50%;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+/* Face transforms - Adjusted for 100% size relative to container size */
+.front {
+    transform: translateZ(40px);
 }
 
-/* Face specific styles */
-/* 1 */
-.front { transform: translateZ(50px); display: flex; justify-content: center; align-items: center; }
+.back {
+    transform: rotateY(180deg) translateZ(40px);
+}
 
-/* 6 */
-.back { transform: rotateY(180deg) translateZ(50px); display: grid; grid-template-columns: repeat(2, 1fr); padding: 18px; gap: 4px; }
-.back::before, .back::after { display: none; }
-.back .dot { display: block; }
+.right {
+    transform: rotateY(90deg) translateZ(40px);
+}
 
-/* 2 */
-.right { transform: rotateY(90deg) translateZ(50px); display: flex; justify-content: space-between; padding: 18px; }
-.right::before { align-self: flex-start; }
-.right::after { align-self: flex-end; }
+.left {
+    transform: rotateY(-90deg) translateZ(40px);
+}
 
-/* 5 */
-.left { transform: rotateY(-90deg) translateZ(50px); display: grid; grid-template-columns: repeat(2, 1fr); padding: 18px; gap: 4px; }
-.left::before, .left::after { display: none; } /* Custom logic for 5 in JS/HTML structure or just specific CSS */
+.top {
+    transform: rotateX(90deg) translateZ(40px);
+}
 
-/* 3 */
-.top { transform: rotateX(90deg) translateZ(50px); display: flex; justify-content: center; align-items: center; }
-.top::before { position: absolute; top: 18px; left: 18px; }
-.top::after { position: absolute; bottom: 18px; right: 18px; }
+.bottom {
+    transform: rotateX(-90deg) translateZ(40px);
+}
 
-/* 4 */
-.bottom { transform: rotateX(-90deg) translateZ(50px); display: grid; grid-template-columns: repeat(2, 1fr); padding: 18px; gap: 4px; }
-.bottom::before, .bottom::after { display: none; }
+@media (min-width: 600px) {
+    .front {
+        transform: translateZ(50px);
+    }
 
-/* Fixing face dot layouts with simplified approach */
-/* We will use specific classes added in JS or inner HTML for dots to be perfect, 
-   but for now let's use a simpler background-image radial gradient trick for better performance/cleaner CSS 
-   OR just structure the HTML inside faces better in the JS generation. 
-   
-   Actually, let's use the radial-gradient method for the dots to keep HTML clean.
-*/
+    .back {
+        transform: rotateY(180deg) translateZ(50px);
+    }
 
+    .right {
+        transform: rotateY(90deg) translateZ(50px);
+    }
+
+    .left {
+        transform: rotateY(-90deg) translateZ(50px);
+    }
+
+    .top {
+        transform: rotateX(90deg) translateZ(50px);
+    }
+
+    .bottom {
+        transform: rotateX(-90deg) translateZ(50px);
+    }
+}
+
+/* Dots patterns */
 .face {
     background-color: white;
     background-image: radial-gradient(circle at center, var(--dot-color) 8px, transparent 9px);
@@ -135,29 +228,34 @@ header p {
     background-repeat: no-repeat;
 }
 
-.face::before, .face::after { display: none; } /* Reset previous attempt */
+.face::before,
+.face::after {
+    display: none;
+}
 
 /* 1 */
-.front { background-image: radial-gradient(circle at center, var(--dot-color) 10px, transparent 11px); }
+.front {
+    background-image: radial-gradient(circle at center, var(--dot-color) 10px, transparent 11px);
+}
 
 /* 2 */
-.right { 
-    background-image: 
+.right {
+    background-image:
         radial-gradient(circle at 25% 25%, var(--dot-color) 8px, transparent 9px),
         radial-gradient(circle at 75% 75%, var(--dot-color) 8px, transparent 9px);
 }
 
 /* 3 */
-.top { 
-    background-image: 
+.top {
+    background-image:
         radial-gradient(circle at 25% 25%, var(--dot-color) 8px, transparent 9px),
         radial-gradient(circle at 50% 50%, var(--dot-color) 8px, transparent 9px),
         radial-gradient(circle at 75% 75%, var(--dot-color) 8px, transparent 9px);
 }
 
 /* 4 */
-.bottom { 
-    background-image: 
+.bottom {
+    background-image:
         radial-gradient(circle at 25% 25%, var(--dot-color) 8px, transparent 9px),
         radial-gradient(circle at 75% 25%, var(--dot-color) 8px, transparent 9px),
         radial-gradient(circle at 25% 75%, var(--dot-color) 8px, transparent 9px),
@@ -165,8 +263,8 @@ header p {
 }
 
 /* 5 */
-.left { 
-    background-image: 
+.left {
+    background-image:
         radial-gradient(circle at 25% 25%, var(--dot-color) 8px, transparent 9px),
         radial-gradient(circle at 75% 25%, var(--dot-color) 8px, transparent 9px),
         radial-gradient(circle at 50% 50%, var(--dot-color) 8px, transparent 9px),
@@ -175,8 +273,8 @@ header p {
 }
 
 /* 6 */
-.back { 
-    background-image: 
+.back {
+    background-image:
         radial-gradient(circle at 25% 25%, var(--dot-color) 8px, transparent 9px),
         radial-gradient(circle at 75% 25%, var(--dot-color) 8px, transparent 9px),
         radial-gradient(circle at 25% 50%, var(--dot-color) 8px, transparent 9px),
@@ -186,6 +284,115 @@ header p {
 }
 
 
+/* Random Number Generator Styles */
+.inputs-group {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.input-wrapper label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    margin-left: 0.5rem;
+}
+
+.input-wrapper input {
+    background: var(--surface);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    color: var(--text);
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    width: 100px;
+    text-align: center;
+    font-family: inherit;
+    transition: all 0.3s;
+}
+
+.input-wrapper input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+}
+
+.divider {
+    padding-bottom: 1rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.result-box {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+#randomNumber {
+    font-size: 5rem;
+    font-weight: 700;
+    color: var(--primary);
+    transition: all 0.2s;
+}
+
+.history-section {
+    margin-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1.5rem;
+}
+
+.history-section h3 {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.history-list {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.history-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Controls & UI Elements */
 .premium-btn {
     position: relative;
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
@@ -196,6 +403,7 @@ header p {
     overflow: hidden;
     transition: transform 0.2s, box-shadow 0.2s;
     box-shadow: 0 10px 30px -10px var(--glow);
+    display: inline-block;
 }
 
 .premium-btn:hover {
@@ -205,6 +413,12 @@ header p {
 
 .premium-btn:active {
     transform: translateY(1px);
+}
+
+.premium-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .btn-text {
@@ -222,25 +436,33 @@ header p {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
     animation: shine 3s infinite;
 }
 
 @keyframes shine {
-    0% { left: -100%; }
-    20% { left: 100%; }
-    100% { left: 100%; }
+    0% {
+        left: -100%;
+    }
+
+    20% {
+        left: 100%;
+    }
+
+    100% {
+        left: 100%;
+    }
 }
 
 .result-display {
     margin-top: 2rem;
     font-size: 1.5rem;
     color: #94a3b8;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.05);
     padding: 1rem 2rem;
     border-radius: 12px;
     display: inline-block;
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .score {
@@ -248,4 +470,26 @@ header p {
     font-weight: 700;
     margin-left: 0.5rem;
     font-size: 2rem;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 2rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+    opacity: 0.8;
+}
+
+.back-link:hover {
+    color: var(--primary);
+    text-decoration: underline;
+    opacity: 1;
+}
+
+footer {
+    margin-top: 3rem;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.2);
 }
