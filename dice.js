@@ -89,52 +89,73 @@ document.addEventListener('DOMContentLoaded', () => {
         rollBtn.style.cursor = 'default';
 
         let finalTotal = 0;
-        let completedAnimations = 0;
+
+        // Minimum animation time 2s, plus stagger
+        const baseDuration = 2000;
 
         diceElements.forEach((dice, index) => {
+            // Get current rotation or default to 0
+            // We store these as integers in the dataset to avoid parsing complex transform strings
+            let currentX = parseFloat(dice.dataset.rotateX || 0);
+            let currentY = parseFloat(dice.dataset.rotateY || 0);
+
             // Determine result
             const result = getRandomFace();
             finalTotal += result;
 
-            // Target rotation for this face
-            // To show Face X, we need to rotate to its inverse
-            // Logic:
-            // 1 (Front) -> 0,0
-            // 6 (Back) -> 180, 0 (or 0, 180)
-            // 2 (Right) -> 0, -90
-            // 5 (Left) -> 0, 90
-            // 3 (Top) -> -90, 0
-            // 4 (Bottom) -> 90, 0
-
-            // Standard map
-            const target = { x: 0, y: 0 };
+            // Target face base rotation (0-360 range approximately)
+            // 1 (Front): 0,0
+            // 6 (Back): 180,0
+            // 2 (Right): 0,-90
+            // 5 (Left): 0,90
+            // 3 (Top): -90,0
+            // 4 (Bottom): 90,0
+            let targetX = 0;
+            let targetY = 0;
             switch (result) {
-                case 1: target.x = 0; target.y = 0; break;
-                case 6: target.x = 180; target.y = 0; break;
-                case 2: target.x = 0; target.y = -90; break;
-                case 5: target.x = 0; target.y = 90; break;
-                case 3: target.x = -90; target.y = 0; break;
-                case 4: target.x = 90; target.y = 0; break;
+                case 1: targetX = 0; targetY = 0; break;
+                case 6: targetX = 180; targetY = 0; break;
+                case 2: targetX = 0; targetY = -90; break;
+                case 5: targetX = 0; targetY = 90; break;
+                case 3: targetX = -90; targetY = 0; break;
+                case 4: targetX = 90; targetY = 0; break;
             }
 
-            // Add extra spins for animation
-            // Multiples of 360 ensure we land on the same orientation relative to target
-            const extraX = (3 + Math.floor(Math.random() * 3)) * 360;
-            const extraY = (3 + Math.floor(Math.random() * 3)) * 360;
+            // Calculate 'gap' to get from current modulus position to target
+            // We want to move forward (positive) generally
+            const modX = currentX % 360;
+            const modY = currentY % 360;
 
-            // Apply unique rotation to each dice
-            const finalX = target.x + extraX;
-            const finalY = target.y + extraY;
+            let diffX = targetX - modX;
+            let diffY = targetY - modY;
 
-            // Stagger animations
+            // Normalize diff to be standard shortest path or just path forward?
+            // To ensure "spin", we add huge multiples of 360.
+            // But we need to make sure the end result % 360 === target.
+
+            // Add minimum 5 full spins (5 * 360 = 1800 degrees)
+            // Add random extra spins (0-3)
+            const minSpins = 5;
+            const extraSpins = Math.floor(Math.random() * 3);
+            const totalAdd = (minSpins + extraSpins) * 360;
+
+            const newX = currentX + totalAdd + diffX;
+            const newY = currentY + totalAdd + diffY;
+
+            // Store for next time
+            dice.dataset.rotateX = newX;
+            dice.dataset.rotateY = newY;
+
+            // Apply transform with random staggering for start
             setTimeout(() => {
-                dice.style.transition = 'transform 1.5s cubic-bezier(0.15, 0.9, 0.3, 1.2)';
-                dice.style.transform = `rotateX(${finalX}deg) rotateY(${finalY}deg)`;
-            }, index * 100);
+                // Ensure duration is always > 2s
+                dice.style.transition = `transform ${baseDuration / 1000}s cubic-bezier(0.2, 0.8, 0.2, 1.1)`;
+                dice.style.transform = `rotateX(${newX}deg) rotateY(${newY}deg)`;
+            }, index * 50);
         });
 
-        // Finish up after all animations are done
-        const totalDuration = 1500 + (diceElements.length * 100);
+        // Finish up after all animations are done + buffer
+        const totalWait = baseDuration + (diceElements.length * 50) + 100;
 
         setTimeout(() => {
             isRolling = false;
@@ -154,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalScoreElement.style.textShadow = '';
             }, 300);
 
-        }, totalDuration);
+        }, totalWait);
     }
 
     rollBtn.addEventListener('click', rollDice);
